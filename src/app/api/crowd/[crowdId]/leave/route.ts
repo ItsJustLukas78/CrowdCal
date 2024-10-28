@@ -2,9 +2,9 @@ import prisma from "@/lib/db";
 import { NextResponse, NextRequest } from "next/server";
 import { admin } from "@/lib/firebase/firebase-admin";
 
-export async function POST(request: NextRequest, context: { params: { crowdId: string } }
+export async function POST(request: NextRequest, context: { params: Promise<{ crowdId: string }> }
 ) {
-    const crowdId = context.params.crowdId;
+    const crowdId = (await context.params).crowdId;
     
     const token = request.headers.get('Authorization')?.split(' ')[1];
     if (!token) {

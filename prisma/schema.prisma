@@ -26,7 +26,7 @@ model Event {
   crowd            Crowd            @relation(fields: [crowdId], references: [id])
   creatorProfileId String
   creatorProfile   CrowdUserProfile @relation(fields: [creatorProfileId], references: [id])
-  Vote             Vote[]
+  votes            Vote[]
 }
 
 model Crowd {

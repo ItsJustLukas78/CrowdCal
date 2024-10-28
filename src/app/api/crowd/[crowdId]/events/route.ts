@@ -2,8 +2,8 @@ import prisma from "@/lib/db";
 import { NextResponse, NextRequest } from "next/server";
 import { admin } from "@/lib/firebase/firebase-admin";
 
-export async function GET(request: NextRequest, context: { params: { crowdId: string } }) {
-  const crowdId = await context.params.crowdId; // Access crowdId from context.params
+export async function GET(request: NextRequest, context: { params: Promise<{ crowdId: string }> }) {
+  const crowdId = (await context.params).crowdId; // Access crowdId from context.params
 
   // a single request can only get a max of 30 days of events which is default
   // a specific day can also be requested
@@ -29,6 +29,14 @@ export async function GET(request: NextRequest, context: { params: { crowdId: st
   }
 
   try {
+    const user = await prisma.user.findUnique({
+      where: { firebaseUid: decodedToken.uid },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
     let events;
     if (date) {
       const specifiedDate = new Date(date);
@@ -43,6 +51,13 @@ export async function GET(request: NextRequest, context: { params: { crowdId: st
           end: {gte: startOfDay},   // Event ends on or after the start of the day
         },
         orderBy: {start: 'asc'},
+        include: {
+          votes: {
+            where: {
+              userId: user.id
+            }
+          }
+        }
       });
     } else if (startDate && endDate) {
       const start = new Date(startDate);
@@ -62,6 +77,13 @@ export async function GET(request: NextRequest, context: { params: { crowdId: st
           end: {gte: start},  // Event ends on or after the specified start date
         },
         orderBy: {start: 'asc'},
+        include: {
+          votes: {
+            where: {
+              userId: user.id
+            }
+          }
+        }
       });
     } else {
       // Default behavior if no date is specified
@@ -76,8 +98,31 @@ export async function GET(request: NextRequest, context: { params: { crowdId: st
           end: {gte: new Date(start)},  // Event ends on or after the start of the day
         },
         orderBy: { start: 'asc' },
+        include: {
+          votes: {
+            where: {
+              userId: user.id
+            }
+          }
+        }
       });
     }
+
+    // await prisma.event.updateMany({
+    //   where: {
+    //     crowdId: crowdId
+    //   },
+    //   data: {
+    //     upvotes: 0,
+    //     downvotes: 0
+    //   }
+    // });
+    // for (const myevent of events) {
+    //     console.log(myevent.title);
+    //     console.log(myevent.votes);
+    // }
+    //
+    // console.log(events);
 
     return NextResponse.json({ events }, { status: 200 });
   } catch (error) {

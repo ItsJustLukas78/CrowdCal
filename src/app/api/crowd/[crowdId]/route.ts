@@ -3,9 +3,9 @@ import { NextResponse, NextRequest } from "next/server";
 import { admin } from "@/lib/firebase/firebase-admin";
 
 // Get single crowd details
-export async function GET(request: NextRequest, context: { params: { crowdId: string } }
+export async function GET(request: NextRequest, context: { params: Promise<{ crowdId: string }> }
 ) {
-    const crowdId = context.params.crowdId;
+    const crowdId = (await context.params).crowdId;
     
     const token = request.headers.get('Authorization')?.split(' ')[1];
     if (!token) {
@@ -43,13 +43,11 @@ export async function GET(request: NextRequest, context: { params: { crowdId: st
 }
 
 // Update crowd details
-export async function PATCH(
-    request: NextRequest,
-    { params }: { params: { crowdId: string } }
-) {
+export async function PATCH(request: NextRequest, props: { params: Promise<{ crowdId: string }> }) {
+    const params = await props.params;
     const crowdId = params.crowdId;
     const { name, description, code, emailDomain } = await request.json();
-    
+
     const token = request.headers.get('Authorization')?.split(' ')[1];
     if (!token) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

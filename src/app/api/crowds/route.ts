@@ -55,6 +55,7 @@ export async function GET(
                 'Access-Control-Allow-Methods': 'GET, OPTIONS',
             }
         })
+
     } catch (e) {
         console.error(e);
         return NextResponse.json({error: 'An error occurred while processing your request'}, {status: 500});

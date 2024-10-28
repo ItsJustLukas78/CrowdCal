@@ -3,9 +3,9 @@ import { NextResponse, NextRequest } from "next/server";
 import { admin } from "@/lib/firebase/firebase-admin";
 import { Event } from "@/types";
 
-export async function DELETE(request: NextRequest, context: { params: { crowdId: string, eventId: string } }) {
-  const eventId = context.params.eventId;
-  const crowdId = context.params.crowdId;
+export async function DELETE(request: NextRequest, context: { params: Promise<{ crowdId: string, eventId: string }> }) {
+  const eventId = (await context.params).eventId;
+  const crowdId = (await context.params).crowdId;
 
   if (!eventId) {
     return NextResponse.json({ error: 'Event ID is required' }, { status: 400 });

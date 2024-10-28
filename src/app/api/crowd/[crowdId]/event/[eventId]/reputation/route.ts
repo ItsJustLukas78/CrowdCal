@@ -9,12 +9,9 @@ enum VoteType {
 }
 
 
-export async function PATCH(
-      request: NextRequest,
-  { params }: { params: { crowdId: string, eventId: string } }){
-
-  const eventId = params.eventId;
-  const crowdId = params.crowdId;
+export async function PATCH(request: NextRequest, context: { params: { crowdId: string, eventId: string } }) {
+  const eventId = context.params.eventId;
+  const crowdId = context.params.crowdId;
   const data = await request.json();
   const { voteType } = data;
 

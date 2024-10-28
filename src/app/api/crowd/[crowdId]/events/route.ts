@@ -2,8 +2,8 @@ import prisma from "@/lib/db";
 import { NextResponse, NextRequest } from "next/server";
 import { admin } from "@/lib/firebase/firebase-admin";
 
-export async function GET(request: NextRequest, params: { crowdId: string } ) {
-  const crowdId = params.crowdId;
+export async function GET(request: NextRequest, context: { params: { crowdId: string } }) {
+  const crowdId = await context.params.crowdId; // Access crowdId from context.params
 
   // a single request can only get a max of 30 days of events which is default
   // a specific day can also be requested

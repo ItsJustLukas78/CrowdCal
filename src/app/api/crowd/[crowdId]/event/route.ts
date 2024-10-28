@@ -3,10 +3,8 @@ import { NextResponse, NextRequest } from "next/server";
 import { admin } from "@/lib/firebase/firebase-admin";
 import { Event } from "@/types";
 
-export async function POST(
-    request: NextRequest,
-  { params }: { params: { crowdId: string } }){
-  const crowdId = params.crowdId;
+export async function POST(request: NextRequest, context: { params: { crowdId: string } }) {
+  const crowdId = context.params.crowdId;
   const data = await request.json();
 
   const { title, start, end, description, location} = data as Event;

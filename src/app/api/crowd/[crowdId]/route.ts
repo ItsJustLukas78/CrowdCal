@@ -3,11 +3,9 @@ import { NextResponse, NextRequest } from "next/server";
 import { admin } from "@/lib/firebase/firebase-admin";
 
 // Get single crowd details
-export async function GET(
-    request: NextRequest,
-    { params }: { params: { crowdId: string } }
+export async function GET(request: NextRequest, context: { params: { crowdId: string } }
 ) {
-    const crowdId = params.crowdId;
+    const crowdId = context.params.crowdId;
     
     const token = request.headers.get('Authorization')?.split(' ')[1];
     if (!token) {

@@ -1,0 +1,89 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Event {
+  id               String           @id @default(cuid())
+  title            String
+  start            DateTime
+  end              DateTime
+  description      String
+  location         String
+  upvotes          Int              @default(0)
+  downvotes        Int              @default(0)
+  crowdId          String
+  crowd            Crowd            @relation(fields: [crowdId], references: [id])
+  creatorProfileId String
+  creatorProfile   CrowdUserProfile @relation(fields: [creatorProfileId], references: [id])
+  Vote             Vote[]
+}
+
+model Crowd {
+  id                String             @id @default(cuid())
+  name              String
+  description       String
+  code              String?
+  emailDomain       String?
+  events            Event[]
+  CrowdUserProfiles CrowdUserProfile[]
+  users             User[]             @relation("UserCrowds")
+  creatorId         String
+  creator           User               @relation(fields: [creatorId], references: [id])
+}
+
+model User {
+  id                String             @id @default(cuid())
+  firebaseUid       String             @unique
+  name              String
+  email             String             @unique
+  CrowdUserProfiles CrowdUserProfile[]
+  Sessions          Session[]
+  crowds            Crowd[]            @relation("UserCrowds")
+  ownedCrowds       Crowd[]
+  votes             Vote[]
+}
+
+model Vote {
+  userId   String
+  eventId  String
+  voteType VoteType
+  user     User     @relation(fields: [userId], references: [id])
+  event    Event    @relation(fields: [eventId], references: [id])
+
+  @@id([userId, eventId])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  expiresAt DateTime
+
+  user User @relation(references: [id], fields: [userId], onDelete: Cascade)
+}
+
+model CrowdUserProfile {
+  id        String  @id @default(cuid())
+  crowdId   String
+  userId    String
+  events    Event[]
+  crowd     Crowd   @relation(fields: [crowdId], references: [id])
+  user      User    @relation(fields: [userId], references: [id])
+  upvotes   Int     @default(0)
+  downvotes Int     @default(0)
+}
+
+enum VoteType {
+  UPVOTE
+  DOWNVOTE
+}

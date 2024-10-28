@@ -52,7 +52,6 @@ export default function Home() {
     return (
       <div>
         {events.map((event, index) => {
-          console.log(event)
           const {
             formattedDate: formattedStartDate,
             formattedTime: formattedStartTime
@@ -87,8 +86,6 @@ export default function Home() {
   };
 
   const callTestEndpoint = async () => {
-    console.log({user});
-    console.log(user?.accessToken);
     // include the token in the headers
     const response = await fetch('/api/test', {
       method: 'GET',
@@ -99,8 +96,6 @@ export default function Home() {
     });
 
     const data = await response.json();
-
-    console.log(data);
   }
 
   return (
@@ -123,24 +118,7 @@ export default function Home() {
               selected={date}
               onSelect={setDate}
               className="rounded-md border"
-            />
-            {/*<div className="flex flex-col gap-5">*/}
-            {/*  <h2 className="text-2xl font-semibold">Events</h2>*/}
-            {/*  <div className="flex flex-col gap-5">*/}
-            {/*    {eventsList()}*/}
-            {/*  </div>*/}
-            {/*  <button onClick={() => createEvent({*/}
-            {/*    title: "Test Event",*/}
-            {/*    start: new Date(),*/}
-            {/*    end: new Date(),*/}
-            {/*    description: "This is a test event",*/}
-            {/*    location: "Test Location",*/}
-            {/*    reputation: 0,*/}
-            {/*    crowdId: "1"*/}
-            {/*  })}>*/}
-            {/*    Create Event*/}
-            {/*  </button>*/}
-            {/*</div>*/}
+            /> 
           </div>
         </div>
       </section>

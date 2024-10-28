@@ -26,8 +26,17 @@ export async function PATCH(
 
   try {
     const decodedToken = await admin.auth().verifyIdToken(token);
+    
+    const user = await prisma.user.findUnique({
+        where: { firebaseUid: decodedToken.uid }
+    });
+
+    if (!user) {
+        return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+        
     const crowdUserProfile = await prisma.crowdUserProfile.findFirst({
-        where: { crowdId, userId: decodedToken.uid },
+        where: { crowdId, userId: user.id }
     });
     const event = await prisma.event.findFirst({
         where: { id: eventId, crowdId },
@@ -38,7 +47,7 @@ export async function PATCH(
     }
 
     const existingVote = await prisma.vote.findUnique({
-        where: { userId_eventId: { userId: decodedToken.uid, eventId } },
+        where: { userId_eventId: { userId: user.id, eventId } },
     });
 
     let upvoteChange: number = 0;
@@ -59,7 +68,7 @@ export async function PATCH(
         } else {
             downvoteChange = -1;
         }
-        await prisma.vote.delete({ where: { userId_eventId: { userId: decodedToken.uid, eventId } } });
+        await prisma.vote.delete({ where: { userId_eventId: { userId: user.id, eventId } } });
       } else {
           // Change vote
         if (voteType === VoteType.UPVOTE) {
@@ -70,7 +79,7 @@ export async function PATCH(
             upvoteChange = -1;
         }
         await prisma.vote.update({
-            where: { userId_eventId: { userId: decodedToken.uid, eventId } },
+            where: { userId_eventId: { userId: user.id, eventId } },
             data: { voteType },
         });
       }
@@ -98,7 +107,7 @@ export async function PATCH(
       transactionOperations.push(
         prisma.vote.create({
           data: {
-            userId: decodedToken.uid,
+            userId: user.id,
             eventId,
             voteType,
           },

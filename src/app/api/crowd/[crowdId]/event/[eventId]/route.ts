@@ -34,7 +34,7 @@ export async function DELETE(
     const crowdUserProfile = await prisma.crowdUserProfile.findFirst({
       where: {
         crowdId,
-        userId: decodedToken.uid,
+        userId: user.id,
       },
     });
 

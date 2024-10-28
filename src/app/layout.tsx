@@ -16,9 +16,10 @@ export default function RootLayout({children}: { children: React.ReactNode }) {
     {/*<div className="absolute -z-10 min-h-full w-full bg-black">*/}
     {/*  <div className="absolute bottom-0 left-0 right-0 top-0 h-full w-full bg-[linear-gradient(to_right,#4f4f4f2e_3px,transparent_1px),linear-gradient(to_bottom,#8080800a_2px,transparent_1px)] bg-[size:14px_24px]"></div>*/}
     {/*</div>*/}
-    <NavBar/>
-    {children}
-    <Footer/>
+    Hello this is a mobile app
+    {/*<NavBar/>*/}
+    {/*{children}*/}
+    {/*<Footer/>*/}
     </body>
     </html>
   )

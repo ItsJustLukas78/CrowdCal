@@ -10,8 +10,6 @@ export async function POST(request: NextRequest) {
   try {
     // Check if user already exists
     let user = await prisma.user.findUnique({ where: { firebaseUid } });
-    let allUsers = await prisma.user.findMany();
-    console.log(allUsers);
 
     // Create new user if not exists
     if (!user) {

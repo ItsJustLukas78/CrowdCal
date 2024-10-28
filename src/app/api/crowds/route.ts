@@ -31,15 +31,16 @@ export async function GET(
     }
 
     try {
-
-        const user: UserWithCrowds | null = await prisma.user.findUnique({
-            where: {
-                id: decodedToken.uid
-            },
+        const user = await prisma.user.findUnique({
+            where: { firebaseUid: decodedToken.uid },
             include: {
                 crowds: true
             }
         });
+
+        if (!user) {
+            return NextResponse.json({ error: 'User not found' }, { status: 404 });
+        }
 
         const crowds: PrismaCrowd[] | undefined = user?.crowds;
 

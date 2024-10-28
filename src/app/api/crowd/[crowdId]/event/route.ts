@@ -24,10 +24,18 @@ export async function POST(
   }
 
   try {
+    const user = await prisma.user.findUnique({
+      where: { firebaseUid: decodedToken.uid },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
     const crowdUserProfile = await prisma.crowdUserProfile.findFirst({
       where: {
         crowdId,
-        userId: decodedToken.uid,
+        userId: user.id,
       },
     });
 
@@ -88,10 +96,18 @@ export async function DELETE(request: NextRequest) {
   }
 
   try {
+    const user = await prisma.user.findUnique({
+      where: { firebaseUid: decodedToken.uid },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
     const crowdUserProfile = await prisma.crowdUserProfile.findFirst({
       where: {
         crowdId,
-        userId: decodedToken.uid,
+        userId: user.id,
       },
     });
 
